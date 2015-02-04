@@ -9,9 +9,13 @@ Quick start
 
 - Download the package:
 
-```
-$ git clone http://github.com/facom/BHMcalc.git
-```
+  Using git:
+
+  ```
+  $ git clone http://github.com/facom/BHMcalc.git
+  ```
+
+  You can also donwload a zip from this url.
 
 - Run a test:
 
