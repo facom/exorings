@@ -15,7 +15,8 @@ Quick start
   $ git clone http://github.com/facom/BHMcalc.git
   ```
 
-  You can also donwload a zip from this url.
+  You can also donwload a zip from [this
+  url](https://github.com/facom/exorings/archive/master.zip).
 
 - Run a test:
 
