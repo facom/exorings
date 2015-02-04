@@ -5,7 +5,7 @@ Code Repository for Exoring Transit Calculations
 ------------------------------------------------
 
 Quick start
------------
+***********
 
 - Download the package:
 
