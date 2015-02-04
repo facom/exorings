@@ -21,7 +21,7 @@ Quick start
 - Run a test:
 
   ```
-  $ python exorings-test.py
+  $ python exorings.py
   ```
 	
   This test will tell you which python packages are required to use
@@ -30,7 +30,7 @@ Quick start
 - Calculate basic ring transit properties:
 
   ```
-  $ python exorings-basic.py fi=1.5 fe=2.35 theta=30 ir=80
+  $ python exorings-basic.py fi=1.5;fe=2.35;theta=30.0;ir=80.0
   ```
 
   Output include: transit depth (in ppm), total transit duration (in
