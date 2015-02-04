@@ -43,7 +43,7 @@ References
 When using **exorings** code for research purposes please cite the
 following paper:
    
-> Zuluaga, J.I., Kipping, D., Sucerquia, M., Alvarado, J. A. "A novel
+> *Zuluaga, J.I., Kipping, D., Sucerquia, M., Alvarado, J. A.* "A novel
 > method for identifying exoplanetary rings", Submitted to
 > Astrophysical Journal Letters, 2015.
 
