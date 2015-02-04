@@ -1,2 +1,2 @@
-# exorings
-Code Repository for Exoring Transit Properties
+# Exorings
+Exoring Code Repository
