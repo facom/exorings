@@ -12,7 +12,7 @@ Quick start
   Using git:
 
   ```
-  $ git clone http://github.com/facom/BHMcalc.git
+  $ git clone http://github.com/facom/exorings.git
   ```
 
   Or download it as a zip file from [this
