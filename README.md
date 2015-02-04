@@ -19,12 +19,12 @@ Quick start
 
 - Run a test:
 
-```
-$ python exorings-test.py
-```
+  ```
+  $ python exorings-test.py
+  ```
 	
   This test will tell you which python packages are required to use
-  the *exoring* code.
+  the **exorings** code.
 
 - Calculate basic ring transit properties:
 
