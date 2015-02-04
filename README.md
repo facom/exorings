@@ -15,7 +15,7 @@ Quick start
   $ git clone http://github.com/facom/BHMcalc.git
   ```
 
-  You can also donwload a zip from [this
+  Or download it as a zip file from [this
   url](https://github.com/facom/exorings/archive/master.zip).
 
 - Run a test:
@@ -28,6 +28,14 @@ Quick start
   the **exorings** code.
 
 - Calculate basic ring transit properties:
+
+  ```
+  $ python exorings-basic.py fi=1.5 fe=2.35 theta=30 ir=80
+  ```
+
+  Output include: transit depth (in ppm), total transit duration (in
+  hours), duration of full transit (in hours), observed radius (pobs),
+  observed asterodensity (rhoobs).
 
 ==================================================
 Jorge I. Zuluaga (C) 2015
