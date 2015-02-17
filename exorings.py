@@ -16,7 +16,6 @@ from sys import exit,argv
 ############################################################
 packages={
     "numpy":dict(linux="python-numpy",alias="np"),
-    "matplotlib.pyplot":dict(linux="python-matplotlib",alias="plt")
     }
 
 for pack in packages.keys():
