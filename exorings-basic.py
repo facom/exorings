@@ -2,13 +2,11 @@ from exorings import *
 """
 This script calculate exoring transit basic properties, such as:
 
-    delta: Transit depth
+    Orbital semimajor axis: a/R*
+    Orbital inclination: iorb
+    Transit depth: delta
     Observed Planetary Radius: pobs
-    Orbital period: P 
-    Impact parameter: b 
-    Scaled planetary radius: p 
-    Scaled semimajor axis: (a/Rs) 
-    Planetary radius ratio: pobs/p 
+    * Planetary radius ratio: pobs/p *
     Planet contact positions: x1, x2, x3, x4
     Ring contact positions: xR1, xR2, xR3, xR4
     Transit duration (non-ringed): T14p, T23p
@@ -16,20 +14,19 @@ This script calculate exoring transit basic properties, such as:
     Observed scaled semimajor axis: (a/Rs)_obs 
     Observed impact parameter: b_obs 
     Observed stellar density: rho_obs 
-    Photo-ring effect: log10(rho_obs/rho_true)
+    * Photo-ring effect: log10(rho_obs/rho_true) *
 
 Input parameters:
 
-    Ms: Stellar mass.
-    Rs: Stellar radius.
-    Rp: Planetary radius.
-    a: Semimajor axis.
-    iorb: Orbital inclination.
+    rhotrue: Stellar density (in g/cm^3)
+    P: Orbital period (in days)
+    b: Impact parameter (in units of stellar radius).
+    p: Planetary radius (in units of stellar radius).
     fi: Ring interior radius.
     fe: Ring exterior radius.
     tau: Ring normal opacity.
     theta: Projected tilt. 90 means that the image of the ring
-           in perpendicular to orbit in the plane of the sky
+           in perpendicular to the orbit in the plane of the sky
     ir: Projected inclindation. 90 for an edge-on ring.
 
 Usage:
@@ -226,6 +223,10 @@ print "\tBlocking factor: beta = %e."%beta
 
 print L,"DERIVED PROPERTIES",R
 
+print "Orbital properties:"
+print "\tSemimajor axis: a/R*= %.4f"%a
+print "\tOrbital Inclination: iorb = %.3f deg"%(np.arccos(cosiorb)*RAD)
+
 print "Ring derived properties:"
 print "\tProjected exrenal ring axes: A/R* = %.4f, B/R* = %.4f"%(A,B)
 print "\tEffective ring interior radius: r_i/R* = %e"%np.sqrt(ri2)
@@ -236,7 +237,6 @@ print L,"TRANSIT PROPERTIES",R
 print "Transit Depth: delta = %.2f ppm"%(delta*1E6)
 print "Observed Planetary Radius: pobs = sqrt(delta) = %.6f"%(pobs)
 print "Scaled planetary radius: p = Rp/R* = %.6f"%(par.p)
-print "Scaled semimajor axis: (a/R*) = %.2f"%(a)
 print "Planetary radius ratio: pobs/p = %.2f"%(pobs/par.p)
 print "Planet contact positions:"
 print "\tx1 = %.3f, x2 = %.3f"%(xp1,xp2)
