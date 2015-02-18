@@ -43,13 +43,14 @@ Usage:
 
 #DEFAULT PARAMETER VALUES
 default=dict(
-    Rs=1.0,#Rsolar
-    Ms=1.0,#Msolar
-    a=1.0,#AU
-    iorb=90.0,#degrees
+    #TRANSIT PARAMETERS
+    rhotrue=1.40598,#g/cm^3
+    P=365.2446,#days
+    b=0.1875,#R*
+    #PLANET AND RINGS
+    p=0.08,#Rstar
     fi=1.5,#Rplanet
     fe=2.35,#Rplanet
-    Rp=0.08,#Rstar
     tau=1.0,
     theta=30.0,#degrees
     ir=80.0,#degrees
@@ -65,20 +66,12 @@ par=getParameters(default)
 #==============================
 #ORBITAL PROPERTIES
 #==============================
-#Stellar density (kg/m^3)
-rhotrue=(par.Ms*MSUN)/(4./3*np.pi*(par.Rs*RSUN)**3)
+#SEMIMAJOR AXIS (a/R*)
+a=(GCONST*(par.rhotrue*1E3)/(3*np.pi)*(par.P*DAY)**2)**(1./3)
 
-#Period (in seconds)
-P=2*np.pi*np.sqrt((par.a*AU)**3/(GCONST*(par.Ms*MSUN)))
-
-#Impact parameter (in stellar radii)
-b=(par.a*AU)*np.cos(par.iorb*DEG)/(par.Rs*RSUN)
-
-#Planetary scaled radius
-par.p=par.Rp
-
-#Scaled orbital semimajor axis
-asc=(par.a*AU)/(par.Rs*RSUN)
+#ORBITAL INCLINATION
+cosiorb=par.b/a
+siniorb=(1-cosiorb**2)**0.5
 
 #==============================
 #EXTERNAL RING PROPERTIES
@@ -96,10 +89,9 @@ B=A*np.cos(par.ir*DEG)
 hp=max(par.p,A*np.sin(par.theta*DEG),B*np.cos(par.theta*DEG))
 
 #Transit condition
-if b>par.Rs-hp:
-    print "No transit (or grazing transit) occurrs with this orbital inclination, iorb = %.2f deg."%par.iorb
-    print "Actual impact parameter: b = %.3f"%b
-    print "Maximum impact parameter: bmax ~ %.3f"%(par.Rs-hp)
+if par.b>1.0-hp:
+    print "No transit (or a grazing transit) occurrs with this impact parameter, b = %.2f."%par.b
+    print "Maximum impact parameter: bmax ~ %.3f"%(1.0-hp)
     exit(1)
 
 #############################################################
@@ -151,7 +143,7 @@ ARp=np.pi*par.p**2+np.pi*(re2-ri2)*par.p**2
 #==============================
 #TRANSIT DEPTH (delta=ARp/As)
 #==============================
-delta=ARp/(np.pi*par.Rs**2)
+delta=ARp/np.pi
 
 #==============================
 #OBSERVED RADIUS (p=Rp,obs/Rp)
@@ -162,14 +154,14 @@ pobs=np.sqrt(delta)
 #CONTACT POSITIONS
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #Contact positions for planetary disk
-xp14=np.sqrt((1+par.p)**2-b**2)
+xp14=np.sqrt((1+par.p)**2-par.b**2)
 xp1=-xp14;xp4=+xp14
-xp23=np.sqrt((1-par.p)**2-b**2)
+xp23=np.sqrt((1-par.p)**2-par.b**2)
 xp2=-xp23;xp3=+xp23
 
 #Contact prosition for external ring (approximate solution)
-xR13=1-A**2*(np.sin(par.theta*DEG)-b/A)**2*(1-B**2/A)
-xR24=1-A**2*(np.sin(par.theta*DEG)+b/A)**2*(1-B**2/A)
+xR13=1-A**2*(np.sin(par.theta*DEG)-par.b/A)**2*(1-B**2/A)
+xR24=1-A**2*(np.sin(par.theta*DEG)+par.b/A)**2*(1-B**2/A)
 
 xR1=-np.sqrt(xR13)-A*np.cos(par.theta*DEG)
 xR2=-np.sqrt(xR24)+A*np.cos(par.theta*DEG)
@@ -187,29 +179,29 @@ x4=max(xp4,xR4)
 #TRANSIT TIMES
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #Non-ringed planet
-T14p=P*np.arcsin((xp4-xp1)/(asc*np.sin(par.iorb*DEG)))/(2*np.pi)/HOUR
-T23p=P*np.arcsin((xp3-xp2)/(asc*np.sin(par.iorb*DEG)))/(2*np.pi)/HOUR
+T14p=(par.P*DAY)*np.arcsin((xp4-xp1)/(a*siniorb))/(2*np.pi)/HOUR
+T23p=(par.P*DAY)*np.arcsin((xp3-xp2)/(a*siniorb))/(2*np.pi)/HOUR
 
 #Ringed planet
-T14=P*np.arcsin((x4-x1)/(asc*np.sin(par.iorb*DEG)))/(2*np.pi)/HOUR
-T23=P*np.arcsin((x3-x2)/(asc*np.sin(par.iorb*DEG)))/(2*np.pi)/HOUR
+T14=(par.P*DAY)*np.arcsin((x4-x1)/(a*siniorb))/(2*np.pi)/HOUR
+T23=(par.P*DAY)*np.arcsin((x3-x2)/(a*siniorb))/(2*np.pi)/HOUR
 
 #############################################################
 # DERIVED TRANSIT PROPERTIES
 #############################################################
 
 #Observed scaled semimajor axis
-aobs=2*(P/HOUR)/np.pi*delta**0.25/(T14**2-T23**2)**0.5
+aobs=2*(par.P*DAY/HOUR)/np.pi*delta**0.25/(T14**2-T23**2)**0.5
 
 #Observed impact parameter
 bobs=((T14**2*(1-np.sqrt(delta))-T23**2*(1+np.sqrt(delta)))/\
           (T14**2-T23**2))**0.5
 
 #Observed stellar density
-rhoobs=(3*np.pi/GCONST)*aobs**3/P**2
+rhoobs=(3*np.pi/GCONST)*aobs**3/(par.P*DAY)**2/1E3
 
 #Photo ring effect
-PR=rhoobs/rhotrue
+PR=rhoobs/par.rhotrue
 logPR=np.log10(PR)
 
 #############################################################
@@ -218,39 +210,33 @@ logPR=np.log10(PR)
 L="*"*60+"\n";R="\n"+"*"*60
 print L,"INPUT PARAMETERS",R
 print "Stellar properties:"
-print "\tRadius: Rs = %.3f Rsun."%par.Rs
-print "\tMass: Ms = %.3f Msun."%par.Ms
-print "\tDensity: rho_true = %.2f kg/m^3."%rhotrue
+print "\tStellar Density: rho_true = %.2f g/cm^3."%par.rhotrue
 print "Planetary properties:"
-print "\tRadius: Rp = %.3f Rsun."%par.p
-print "\tScaled radius: p = %.4f."%par.p
+print "\tPlanetary radius: p = Rp/R* = %.4f."%par.p
 print "Orbital properties:"
-print "\tSemimajor axis: a = %.3f AU, a/Rs = %.2f."%(par.a,asc)
-print "\tOrbital inclination: iorb = %.2f deg."%(par.iorb)
-print "\tOrbital period: P = %.4f days."%(P/DAY)
+print "\tOrbital period: P = %.4f days."%par.P
+print "\tImpact parameter: b/R*= %.4f"%par.b
 print "Ring properties:"
-print "\tInternal Ring Radius: Ri = %.3f Rp."%par.fi
-print "\tExternal Ring Radius: Re = %.3f Rp."%par.fe
+print "\tInternal Ring Radius: Ri/Rp = %.3f Rp."%par.fi
+print "\tExternal Ring Radius: Re/Rp = %.3f Rp."%par.fe
 print "\tNormal opacity: tau = %.3f."%par.tau
 print "\tProjected inclination (90 deg for edge on): ir = %.2f deg."%par.ir
 print "\tProjected tilt: theta = %.2f deg."%par.theta
 print "\tBlocking factor: beta = %e."%beta
 
-print L,"DERIVATIVE PROPERTIES",R
+print L,"DERIVED PROPERTIES",R
 
-print "Ring derivative properties:"
-print "\tProjected exrenal ring axes: A = %.4f, B = %.4f Rs"%(A,B)
-print "\tEffective ring interior radius: r_i = %e Rs"%np.sqrt(ri2)
-print "\tEffective ring exterior radius: r_e = %e Rs"%np.sqrt(re2)
-print "\tProjected ring Area: A_Rp = %e"%ARp
+print "Ring derived properties:"
+print "\tProjected exrenal ring axes: A/R* = %.4f, B/R* = %.4f"%(A,B)
+print "\tEffective ring interior radius: r_i/R* = %e"%np.sqrt(ri2)
+print "\tEffective ring exterior radius: r_e/R* = %e"%np.sqrt(re2)
+print "\tProjected ring Area: A_Rp/R*^2 = %e"%ARp
 
 print L,"TRANSIT PROPERTIES",R
 print "Transit Depth: delta = %.2f ppm"%(delta*1E6)
-print "Observed Planetary Radius: pobs = %.6f"%(pobs)
-print "Orbital period: P = %.2f days"%(P/DAY)
-print "Impact parameter: b = %.4f Rs"%(b)
-print "Scaled planetary radius: p = Rp/Rs = %.6f"%(par.p)
-print "Scaled semimajor axis: (a/Rs) = %.2f"%(asc)
+print "Observed Planetary Radius: pobs = sqrt(delta) = %.6f"%(pobs)
+print "Scaled planetary radius: p = Rp/R* = %.6f"%(par.p)
+print "Scaled semimajor axis: (a/R*) = %.2f"%(a)
 print "Planetary radius ratio: pobs/p = %.2f"%(pobs/par.p)
 print "Planet contact positions:"
 print "\tx1 = %.3f, x2 = %.3f"%(xp1,xp2)
@@ -265,6 +251,6 @@ print "Transit duration (non-ringed): T14 = %.4f h, T23 = %.4f"%(T14p,
                                                                  T23p)
 print "Transit duration (ringed): T14 = %.4f h, T23 = %.4f"%(T14,T23)
 print "Observed scaled semimajor axis: (a/Rs)_obs = %.2f"%(aobs)
-print "Observed impact parameter: b_obs = %.4f"%(bobs)
-print "Observed stellar density: rho_obs = %.2f"%rhoobs
+print "Observed impact parameter: b_obs/R* = %.4f"%(bobs)
+print "Observed stellar density: rho_obs = %.2f g/cm^3"%rhoobs
 print "Photo-ring effect: PR = %.4f, log10(PR) = %.2f"%(PR,logPR)
